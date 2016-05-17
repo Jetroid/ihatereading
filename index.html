@@ -3,11 +3,11 @@
 <body>
 
 <textarea id="textEntry" rows="4" cols="50">
-blah blah blah paste text here, hit enter
+Paste Text Here
 </textarea>
 
 <textarea id="textOutput" rows="4" cols="50">
-some bullshit will be output here idk
+Text will be output here
 </textarea>
 
 <script type="text/javascript">
@@ -20,15 +20,20 @@ document.getElementById("textEntry").addEventListener('keypress', function (e) {
       var text = document.getElementById("textEntry").value;
       var numLines = 2;
       var chunks = chunkit(text, numLines);
-      document.getElementById("textOutput").value = chunks;
+      var chunkstring = "";
+      for(i = 0; i < chunks.length; i++){
+        chunkstring += chunks[i] + "\n";
+      }
+      document.getElementById("textOutput").value = chunkstring;
     }
   });
   
 function chunkit(text, numLines) {
   //Split into sentences so that we can join them into the correct things. 
-  //Look for the end of a line (.?!), followed by a space (\s), followed by the start of a new sentece (A-Za-z0-9)
-  //Then split on this.
-  var sentences = text.replace(/([.?!])\s*(?=[A-Za-z0-9])/g, "$1|").split(/[|\n]+/);
+  //Look for the end of a line (.?!), followed by a space (\s), followed by the start of a new sentence (A-Za-z0-9)
+  //Then split on it
+  var regex = /([.?!])[\s\n](?=[A-Za-z0-9])/g
+  var sentences = text.replace(regex, "$1|").split(/[|\n]+/);
   //Break the text into chunks of [numLines] sentences
   var chunks = [];
   var chunk = "";
@@ -36,12 +41,14 @@ function chunkit(text, numLines) {
   for(i = 0; i < sentences.length; i++){
     chunk += sentences[i] + " ";
     numscanned++;
-    if (numscanned == numLines || i + 1 == sentences.length) {
+    if (numscanned == numLines || i + 1 == sentences.length || chunk.length > 140) {
       chunks.push(chunk.trim());
       chunk = "";
       numscanned = 0;
     }
   }
+  return chunks
+}
 </script>
 
 </body>
