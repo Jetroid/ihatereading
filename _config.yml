@@ -1,0 +1,14 @@
+title: I Hate Reading!
+email: your-email@domain.com
+description: Write an awesome description for your new site here.
+baseurl: "/ihatereading"
+url: "http://example.com"
+
+permalink: pretty
+future: true
+
+#Compression stuff
+compress_html:
+  comments: all
+sass:
+  style: compressed
