@@ -1,49 +1,43 @@
-function chunkit(text, numLines) {
-  //Split into sentences so that we can join them into the correct things. 
-  //Look for the end of a line (.?!), followed by a space (\s), followed by the start of a new sentence (A-Za-z0-9)
-  //Then split on it
-  var regex = /([.?!])[\s\n](?=[A-Za-z0-9])/g
-  var sentences = text.replace(regex, "$1|").split(/[|\n]+/);
-  //Break the text into chunks of [numLines] sentences
-  var chunks = [];
-  var chunk = "";
-  var numscanned = 0;
-  for(i = 0; i < sentences.length; i++){
-    chunk += sentences[i] + " ";
-    numscanned++;
-    if (numscanned == numLines || i + 1 == sentences.length || chunk.length > 140) {
-      chunks.push(chunk.trim());
-      chunk = "";
-      numscanned = 0;
-    }
-  }
-  return chunks
+function textCleanup(text){
+	var wikipediaCitations = /\[[0-9]+\]/g
+	return text.replace(wikipediaCitations, "")
 }
 
-function parseText(){
-	//Get the value of the text
-	var text = document.getElementById("textEntry").value;
-	var numLines = 2;
-	var chunks = chunkit(text, numLines);
-	var chunkstring = "";
-	for(i = 0; i < chunks.length; i++){
-		chunkstring += chunks[i] + "\n";
-	}
-	document.getElementById("textOutput").value = chunkstring;
+
+function run(text){
+	var text = textCleanup(text);
+	var slideHolder = document.getElementById('slides');
+	
+	//Split our text into sentences.
+	var sentences = tokenizer.sentences(text, {"newline_boundaries": true});
+	
+	//Create a slide for each sentence.
+	sentences.forEach(function(sentence){
+		var slide = document.createElement('SECTION');
+		var slidep = document.createElement('P');
+		slidep.innerHTML = sentence;
+		slide.appendChild(slidep);
+		slides.appendChild(slide);
+	});
+	
+	document.getElementById('landing').style.display="none";
+	document.getElementById('slides-container').style.display="block";
+	
+	Reveal.initialize({transition: 'concave'}); // none/fade/slide/convex/concave/zoom);
 }
 
-function parseOnEnter(e){
+function runOnEnter(e, textBox){
 	var key = e.which || e.keyCode;
 	if (key == 13 && !e.shiftKey) { // 13 is enter
-		e.preventDefault()
-		parseText();
+		e.preventDefault();
+		run(textBox.value);
   }
 }
 
 function addListeners(){
 	//On 'Enter', interpret the content of the textEntry box. 
 	document.getElementById("textEntry").addEventListener('keypress', function (e) {
-		parseOnEnter(e);
+		runOnEnter(e, this);
 	});
 }
 

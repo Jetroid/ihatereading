@@ -1,12 +1,26 @@
 ---
 layout: base
 custom_js:
+- sbd.min
+- reveal
 - ihatereading
+custom_style_includes:
+- ihatereading
+custom_css:
+- reveal
 ---
-<textarea id="textEntry" rows="4" cols="50">
-Paste Text Here
-</textarea>
+<div id="landing">
+	<div class="centered">
+		<h1 id="landing-title">Reading is hard.</h1>
+		<p>It doesn't have to be.</p>
+		<br><br>
+		<input type="text" id="urlEntry" placeholder="Paste URL Here" disabled>
+		<textarea id="textEntry" placeholder="Or Paste Text Here"></textarea>
+	</div>
 
-<textarea id="textOutput" rows="4" cols="50">
-Text will be output here
-</textarea>
+		<textarea id="textOutput" class="debug"></textarea>
+</div>
+<div id="slides-container" class="reveal">
+	<div id="slides" class="slides">
+	</div>
+</div>
