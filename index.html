@@ -1,9 +1,11 @@
 ---
 layout: base
 custom_js:
+- pdf
+- pdfjs2text
+- compatibility
 - sbd.min
 - reveal
-- cors
 - ihatereading
 custom_style_includes:
 - ihatereading
@@ -15,13 +17,12 @@ custom_css:
 		<h1 id="landing-title">Reading is hard.</h1>
 		<p>It doesn't have to be.</p>
 		<br><br>
-		<input type="text" id="urlEntry" placeholder="Paste URL Here" disabled>
+		<input type="text" id="urlEntry" placeholder="Paste URL Here">
 		<textarea id="textEntry" placeholder="Or Paste Text Here"></textarea>
 	</div>
-
-		<textarea id="textOutput" class="debug"></textarea>
+	<textarea id="textOutput" class="debug"></textarea>
 </div>
-<div id="slides-container" class="reveal">
+<div id="slides-container" class="reveal" style="display:none;">
 	<div id="slides" class="slides">
 	</div>
 </div>
