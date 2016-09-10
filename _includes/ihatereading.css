@@ -1,33 +1,82 @@
 .debug {
 	display: none !important;
 }
+*{
+font-family: monospace;
+}
 #landing{
 	width: 100%;
 	height: 100vh;
+}
+#banner{
+	width: 100%;
+	background-color: #252525;
+	color: white;
+	font-size: 10vw;
+	font-weight: bold;
+	text-align: center;
+}
+#landing-background {
+	width: 100%;
+	height: 100%;
 	background-color: #B2E1F5;
 	box-shadow: inset 0 0 20em 1em #444;
 }
 .centered {
-	margin: 0;
+	display: block;
 	position: absolute;
-	width: 40%;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-}
-h1, p {
-	color: #ef7701;
+	padding: 0px 5px;
+	top: 30vh;
 }
 .centered *{
 	text-align: center;
 }
+h1, p {
+	color: #ef7701;
+	font-size: 7vw;
+}
+#controls{
+	margin-top: 5vh;
+}
 #textEntry, #urlEntry{
-	border: 0;
-	padding: 0;
 	margin: 0;
+	border: none;
+	border-bottom: 1px dashed gray;
+	padding: 0;
 	resize: none;
 	width: 100%;
-	font-size: 5vh;
+	height: 6vw;
+	vertical-align: middle;
+	font-size: 5vw;
+	float: left;
+}
+#goButton{
+	width: 100%;
+	margin: 0;
+	border: 0;
+	float: left;
+	padding: 15px 0px;
+	box-sizing: border-box;
+	font-weight: bold;
+	font-size: 5vw;
+	cursor: pointer;
+	background-color: #ef7701;
+	box-shadow: inset 0 -0.25em rgba(256, 256, 256, 0.5);
+}
+/* Different looks for non-mobiles... */
+@media (min-width: 800px){
+	#banner{
+			font-size: 3vw;
+	}
+	.centered {
+		top: 15vh;
+		width: 80vw;
+		left: 10vw;
+		padding: 0;
+	}
+	h1, p {
+	font-size: 4vw;
+	}
 }
 /* Reveal JS styling */
 .navigate-up, .navigate-down{
