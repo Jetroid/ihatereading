@@ -1,5 +1,10 @@
 var textEntry = document.getElementById("textEntry");
 var urlEntry = document.getElementById("urlEntry");
+function updateProgress(percentage){
+	var progressBar = document.getElementById('progress-bar');
+	progressBar.setAttribute("style","width:" + percentage + "%");
+	progressBar.style.width = percentage + "%";
+}
 
 function runPDF(url){
 	var url = 'https://jetroidcors.herokuapp.com/' + url;
@@ -7,7 +12,7 @@ function runPDF(url){
 	var pdfjs2text = new PDFJS2TEXT();
 	pdfjs2text.pdfToText(
 		url, 
-		function(completed, total){ console.log ( completed + " / " + total); },
+		function(completed, total){ updateProgress(completed/total*100); },
 		function(text) { run(text) }
 	);
 }

@@ -38,6 +38,17 @@ h1, p {
 #controls{
 	margin-top: 5vh;
 }
+#progress-wrapper{
+	height: 1vh;
+	width: 100%;
+	background: white;
+	border-bottom: 1px dashed gray;
+}
+#progress-bar{
+	height: 100%;
+	width: 0%;
+	background: #ef7701;
+}
 #textEntry, #urlEntry{
 	margin: 0;
 	border: none;
