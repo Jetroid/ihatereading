@@ -96,6 +96,25 @@ function disableOther(textBox){
 	}
 }
 
+function closeSlides(){
+	var landing = document.getElementById('landing');
+	var slidesContainer = document.getElementById('slides-container');
+
+	//Immediately make landing visible
+	landing.style.display="block";
+	slidesContainer.style.display="none";
+
+	//Delete old slides
+	var slides = document.getElementById('slides');
+	var cloned = slides.cloneNode(false);
+	slidesContainer.replaceChild(cloned, slides);
+
+	//Enable the UI.
+	viewingSlides = false;
+	updateProgress(0);
+	enableUI();
+}
+
 function closeOnEscape(evt){
 	if(viewingSlides){
 		evt = evt || window.event;
@@ -106,22 +125,7 @@ function closeOnEscape(evt){
 			isEscape = evt.keyCode == 27;
 		}
 		if (isEscape) {
-			var landing = document.getElementById('landing');
-			var slidesContainer = document.getElementById('slides-container');
-
-			//Immediately make landing visible
-			landing.style.display="block";
-			slidesContainer.style.display="none";
-
-			//Delete old slides
-			var slides = document.getElementById('slides');
-			var cloned = slides.cloneNode(false);
-			slidesContainer.replaceChild(cloned, slides);
-
-			//Enable the UI.
-			viewingSlides = false;
-			updateProgress(0);
-			enableUI();
+			closeSlides();
 		}
   }
 }
@@ -147,7 +151,10 @@ function addListeners(){
 	});
 	//Close
 	document.addEventListener('keydown', function(evt){
-    closeOnEscape(evt);
+		closeOnEscape(evt);
+	});
+	document.getElementById('close').addEventListener('click', function(){
+		closeSlides();
 	});
 }
 
