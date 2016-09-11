@@ -1,5 +1,9 @@
 var textEntry = document.getElementById("textEntry");
 var urlEntry = document.getElementById("urlEntry");
+var goButton = document.getElementById("goButton");
+var goEnabled = true;
+var viewingSlides = false;
+
 function updateProgress(percentage){
 	var progressBar = document.getElementById('progress-bar');
 	progressBar.setAttribute("style","width:" + percentage + "%");
@@ -22,7 +26,23 @@ function textCleanup(text){
 	return text.replace(wikipediaCitations, "")
 }
 
+function disableUI(){
+	urlEntry.disabled = true;
+	textEntry.disabled = true;
+	goEnabled = false;
+}
+
+function enableUI(){
+	if(urlEntry.value != ""){
+		urlEntry.disabled = false;
+	}else{
+		textEntry.disabled = false;
+	}
+	goEnabled = true;
+}
+
 function run(text){
+	disableUI();
 	if(text.endsWith(".pdf")){
 		runPDF(text.trim());
 		return;
@@ -47,12 +67,15 @@ function run(text){
 	document.getElementById('slides-container').style.display="block";
 	
 	Reveal.initialize({transition: 'concave',overview: false}); // none/fade/slide/convex/concave/zoom);
+	viewingSlides = true;
 }
 
 function runOnButton(){
-	var textbox = urlEntry.value == "" ? textEntry : urlEntry;
-	var value = textbox.value;
-	run(value);
+	if(goEnabled){
+		var textbox = urlEntry.value == "" ? textEntry : urlEntry;
+		var value = textbox.value;
+		run(value);
+	}
 }
 
 function runOnEnter(e, textBox){
@@ -74,25 +97,32 @@ function disableOther(textBox){
 }
 
 function closeOnEscape(evt){
-	evt = evt || window.event;
-	var isEscape = false;
-	if ("key" in evt) {
-		isEscape = evt.key == "Escape";
-	} else {
-		isEscape = evt.keyCode == 27;
-	}
-	if (isEscape) {
-		var landing = document.getElementById('landing');
-		var slidesContainer = document.getElementById('slides-container');
+	if(viewingSlides){
+		evt = evt || window.event;
+		var isEscape = false;
+		if ("key" in evt) {
+			isEscape = evt.key == "Escape";
+		} else {
+			isEscape = evt.keyCode == 27;
+		}
+		if (isEscape) {
+			var landing = document.getElementById('landing');
+			var slidesContainer = document.getElementById('slides-container');
 
-		//Immediately make landing visible
-		landing.style.display="block";
-		slidesContainer.style.display="none";
+			//Immediately make landing visible
+			landing.style.display="block";
+			slidesContainer.style.display="none";
 
-		//Delete old slides
-		var slides = document.getElementById('slides');
-		var cloned = slides.cloneNode(false);
-		slidesContainer.replaceChild(cloned, slides);
+			//Delete old slides
+			var slides = document.getElementById('slides');
+			var cloned = slides.cloneNode(false);
+			slidesContainer.replaceChild(cloned, slides);
+
+			//Enable the UI.
+			viewingSlides = false;
+			updateProgress(0);
+			enableUI();
+		}
   }
 }
 
@@ -112,9 +142,10 @@ function addListeners(){
 		disableOther(this);
 	});
 	//Run
-	document.getElementById("goButton").addEventListener('click', function(e) {
+	goButton.addEventListener('click', buttonHandler = function() {
 		runOnButton();
 	});
+	//Close
 	document.addEventListener('keydown', function(evt){
     closeOnEscape(evt);
 	});
