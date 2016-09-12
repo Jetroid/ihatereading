@@ -1,61 +1,63 @@
-    function PDFJS2TEXT(){
-     var self = this;
-     this.complete = 0;
+function PDFJS2TEXT(){
+	/**
+	*
+	* @param data ArrayBuffer of the pdf file content
+	* @param callbackPageDone To inform the progress each time
+	*		when a page is finished. The callback function's input parameters are:
+	*		1) number of pages done;
+	*		2) total number of pages in file.
+	* @param callbackAllDone The input parameter of callback function is 
+	*		the result of extracted text from pdf file.
+	*
+	*/
+	this.pdfToText = function(data, callbackPageDone, callbackAllDone){
+		//Sanitise our input
+		if(!(data	instanceof ArrayBuffer	|| typeof data == 'string' )) return false;
 
-    /**
-     *
-     * @param data ArrayBuffer of the pdf file content
-     * @param callbackPageDone To inform the progress each time
-     *        when a page is finished. The callback function's input parameters are:
-     *        1) number of pages done;
-     *        2) total number of pages in file.
-     * @param callbackAllDone The input parameter of callback function is 
-     *        the result of extracted text from pdf file.
-     *
-     */
-     this.pdfToText = function(data, callbackPageDone, callbackAllDone){
-     console.assert( data  instanceof ArrayBuffer  || typeof data == 'string' );
-     PDFJS.getDocument( data ).then( function(pdf) {
+		//Get the PDF
+		PDFJS.getDocument( data ).then( function(pdf) {
 
-     var total = pdf.numPages;
-     callbackPageDone( 0, total );        
-     var layers = {};        
-     for (i = 1; i <= total; i++){
-        pdf.getPage(i).then( function(page){
-        var n = page.pageNumber;
-        page.getTextContent().then( function(textContent){
-          if( null != textContent.items ){
-            var page_text = "";
-            var last_block = null;
-            for( var k = 0; k < textContent.items.length; k++ ){
-                var block = textContent.items[k];
-                if( last_block != null && last_block.str[last_block.str.length-1] != ' '){
-                    if( block.x < last_block.x )
-                        page_text += "\r\n"; 
-                    else if ( last_block.y != block.y && ( last_block.str.match(/^(\s?[a-zA-Z])$|^(.+\s[a-zA-Z])$/) == null ))
-                        page_text += ' ';
-                }
-                page_text += block.str;
-                last_block = block;
-            }
+			//Set up reporting on progess for callback
+			var completedPages = 0;
+			var totalPages = pdf.numPages;
+			callbackPageDone( completedPages, totalPages );
 
-            textContent != null && console.log("page " + n + " finished."); //" content: \n" + page_text);
-            layers[n] =  page_text + "\n\n";
-          }
-          ++ self.complete;
-          callbackPageDone( self.complete, total );
-          if (self.complete == total){
-            window.setTimeout(function(){
-              var full_text = "";
-              var num_pages = Object.keys(layers).length;
-              for( var j = 1; j <= num_pages; j++)
-                  full_text += layers[j] ;
-              callbackAllDone(full_text);
-            }, 1000);              
-          }
-        }); // end  of page.getTextContent().then
-      }); // end of page.then
-    } // of for
-  });
- }; // end of pdfToText()
-}; // end of class
+			//Iterate through each page and get all the text for that page, store in pages.
+			var text = "";
+			var prevX = null;
+			var prevY = null;
+			var prevStr = null;
+			
+			for (i = 1; i <= totalPages; i++){
+				pdf.getPage(i).then( function(page){
+					var n = page.pageNumber;
+					page.getTextContent().then( function(textContent){
+						if( null != textContent.items ){
+							for (var j = 0; j < textContent.items.length; j++ ){
+								var block = textContent.items[j];
+								var x = block.transform[4];
+								var y = block.transform[5];
+								var str = block.str;
+								
+								//Add a new line if our string is on a different y to the previous,
+								//and our string starts with an uppercase or a letter.
+								//(Trying to identify paragraphs)
+								if(prevY != null && prevY != y && (str.match(/^([A-Z0-9])/) != null)){
+									text += "\r\n";
+								}
+								
+								text += str;
+								prevX = x; prevY = y; prevStr = str;
+							}
+						}
+						++ completedPages;
+						callbackPageDone(completedPages, totalPages );
+						if (completedPages == totalPages){
+							callbackAllDone(text);
+						}
+					});
+				});
+			}
+		});
+	};
+};

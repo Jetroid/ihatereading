@@ -22,8 +22,8 @@ function runPDF(url){
 }
 
 function textCleanup(text){
-	var wikipediaCitations = /\[([0-9]+|edit)\]/g
-	return text.replace(wikipediaCitations, "")
+	var citations = /\s?\[([0-9,]+)\]/g
+	return text.replace(citations, "")
 }
 
 function disableUI(){
@@ -48,12 +48,11 @@ function run(text){
 		return;
 	}
 
-	//var text = textCleanup(text);
-	var slideHolder = document.getElementById('slides');
-	
+	//Clean our text
+	var text = textCleanup(text);
 	//Split our text into sentences.
 	var sentences = tokenizer.sentences(text, {"newline_boundaries": true});
-	
+
 	//Create a slide for each sentence.
 	sentences.forEach(function(sentence){
 		var slide = document.createElement('SECTION');
