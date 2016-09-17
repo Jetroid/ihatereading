@@ -41,6 +41,30 @@ function enableUI(){
 	goEnabled = true;
 }
 
+function resizeText(slideContainer, forceResize){
+	if(!slideContainer.resizedBefore || forceResize){
+		slideContainer.resizedBefore = true;
+
+		var slideTextfill = slideContainer.firstElementChild;
+		var content = slideTextfill.firstElementChild;
+
+		var compStyle = document.defaultView.getComputedStyle(slideContainer);
+		var slideWidth = parseInt(compStyle.getPropertyValue("width"));
+		var slideHeight = parseInt(compStyle.getPropertyValue("height"));
+
+		slideTextfill.style.width = slideWidth + "px";
+		slideTextfill.style.height = slideHeight + "px";
+
+		var contentCompStyle = document.defaultView.getComputedStyle(content);
+		var fontSize = parseInt(contentCompStyle.getPropertyValue("font-size"));
+
+		var $slideTextfill = $(slideTextfill);
+		$slideTextfill.textfill({
+			maxFontPixels: fontSize,
+		});
+	}
+}
+
 function run(text){
 	disableUI();
 	if(text.endsWith(".pdf")){
@@ -55,18 +79,32 @@ function run(text){
 
 	//Create a slide for each sentence.
 	sentences.forEach(function(sentence){
-		var slide = document.createElement('SECTION');
-		var slidep = document.createElement('P');
-		slidep.innerHTML = sentence;
-		slide.appendChild(slidep);
-		slides.appendChild(slide);
+		var slideSpan = document.createElement('SPAN');
+		slideSpan.innerHTML = sentence;
+
+		//get the width and height of the slide container, and re-set it statically to the Textfill
+		var slideTextfill = document.createElement('DIV');
+		slideTextfill.className = "textfill";
+		slideTextfill.appendChild(slideSpan)
+
+		var slideContainer = document.createElement('SECTION');
+		slideContainer.appendChild(slideTextfill);
+
+		slides.appendChild(slideContainer);
 	});
 	
 	document.getElementById('landing').style.display="none";
 	document.getElementById('slides-container').style.display="block";
-	
-	Reveal.initialize({transition: 'concave',overview: false}); // none/fade/slide/convex/concave/zoom);
+
+	Reveal.initialize({transition: 'none',overview: false}); // none/fade/slide/convex/concave/zoom);
 	viewingSlides = true;
+
+	var firstSlide = document.getElementById("slides").firstElementChild;
+	resizeText(firstSlide, false);
+
+	Reveal.addEventListener( 'slidechanged', function( event ) {
+		resizeText(event.currentSlide, false);
+	});
 }
 
 function runOnButton(){

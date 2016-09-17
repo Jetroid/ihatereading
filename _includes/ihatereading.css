@@ -98,6 +98,17 @@ h1, p {
 #close:after {
   transform: rotate(-45deg);
 }
+/* necessary for jquery-textfill to work */
+.slides section,
+.slides section .textfill {
+	height: 90%;
+	width: 100%;
+	box-sizing: border-box;
+}
+.slides section div span{
+	color: #ef7701;
+	font-size: 10vh;
+}
 /* Different looks for non-mobiles... */
 @media (min-width: 800px){
 	#banner{
@@ -116,7 +127,4 @@ h1, p {
 /* Reveal JS styling */
 .navigate-up, .navigate-down{
 	display:none;
-}
-section > p {
-	font-size: 10vh !important;
 }
