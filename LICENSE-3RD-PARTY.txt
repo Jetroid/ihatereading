@@ -2,7 +2,6 @@
                         The MIT License (MIT)
         applies to: 
         - SBD, Copyright (c) 2012 Fabiën Tesselaar
-        - RevealJS, Copyright (C) 2016 Hakim El Hattab
 -----------------------------------------------------------------------------
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

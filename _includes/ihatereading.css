@@ -31,7 +31,7 @@ font-family: monospace;
 .centered *{
 	text-align: center;
 }
-h1, p {
+h1, p, #slide span {
 	color: #ef7701;
 	font-size: 7vw;
 }
@@ -74,29 +74,76 @@ h1, p {
 	background-color: #ef7701;
 	box-shadow: inset 0 -0.25em rgba(256, 256, 256, 0.5);
 }
+/*
+.---..-.   .-..--. .---..---. .---..---..---.
+ \ \ | |__ | || \ \| |-  \ \  | |   \ \  \ \ 
+`---'`----'`-'`-'-'`---'`---' `---'`---'`---'
+*/
+/* CSS for the left and right icons */
+#slide-container{
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+#slide {
+	width: 80%;
+	height: 80%;
+	position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+#slide span {
+	font-size: 10vh;
+  text-align: center;
+  display: block;
+  width: 100%;
+}
+#left, #right{
+	width: 0;
+	height: 0;
+	padding: 0;
+	border: 12px solid transparent;
+	background-color: transparent;
+	position: absolute;
+	opacity: 0.7;
+	bottom: 100px;
+}
+#left{
+	border-right-width: 22px;
+	border-right-color: #000;
+	right: 75px;
+}
+#right{
+	border-left-width: 22px;
+	border-left-color: #000;
+	right: 25px;
+}
+
 /* CSS for the close icon */
 #close {
-  position: absolute;
-  right: 49px; /* Aligns with center of RevealJS nav buttons */
-  top: 32px;
-  width: 32px;
-  height: 32px;
-  opacity: 0.7;
-  z-index: 2; /* Position it above RevealJS */
+	position: absolute;
+	right: 50px;
+	top: 32px;
+	width: 32px;
+	height: 32px;
+	opacity: 0.7;
+	z-index: 2; /* Position it above RevealJS */
 }
 #close:before, #close:after {
-  position: absolute;
-  width: 4px;
-  height: 33px;
-  left: 15px;
-  content: ' ';
-  background-color: #000;
+	position: absolute;
+	width: 4px;
+	height: 33px;
+	left: 15px;
+	content: ' ';
+	background-color: #000;
 }
 #close:before {
-  transform: rotate(45deg);
+	transform: rotate(45deg);
 }
 #close:after {
-  transform: rotate(-45deg);
+	transform: rotate(-45deg);
 }
 /* necessary for jquery-textfill to work */
 .slides section,
@@ -123,8 +170,4 @@ h1, p {
 	h1, p {
 		font-size: 4vw;
 	}
-}
-/* Reveal JS styling */
-.navigate-up, .navigate-down{
-	display:none;
 }

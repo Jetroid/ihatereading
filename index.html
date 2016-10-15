@@ -5,14 +5,11 @@ custom_js:
 - pdfjs2text
 - compatibility
 - sbd.min
-- reveal
 - jquery
 - jquery-textfill
 - ihatereading
 custom_style_includes:
 - ihatereading
-custom_css:
-- reveal
 ---
 <div id="landing">
 	<div id="banner">I HATE READING!</div>
@@ -30,8 +27,11 @@ custom_css:
 	</div>
 	<textarea id="textOutput" class="debug"></textarea>
 </div>
-<div id="slides-container" class="reveal" style="display:none;">
+<div id="slide-container" style="display:none;">
 	<div id="close"></div>
-	<div id="slides" class="slides">
+	<div id="left"></div>
+	<div id="right"></div>
+	<div id="slide">
+		<span id="text"></span>
 	</div>
 </div>

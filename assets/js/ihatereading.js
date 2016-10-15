@@ -3,6 +3,9 @@ var urlEntry = document.getElementById("urlEntry");
 var goButton = document.getElementById("goButton");
 var goEnabled = true;
 var viewingSlides = false;
+//The sentences we wanna display
+var sentences;
+var sentenceIndex = 0;
 
 function updateProgress(percentage){
 	var progressBar = document.getElementById('progress-bar');
@@ -41,28 +44,32 @@ function enableUI(){
 	goEnabled = true;
 }
 
-function resizeText(slideContainer, forceResize){
-	if(!slideContainer.resizedBefore || forceResize){
-		slideContainer.resizedBefore = true;
+function resizeText(){
+	var slide = document.getElementById("slide");
+	var content = slide.firstElementChild;
 
-		var slideTextfill = slideContainer.firstElementChild;
-		var content = slideTextfill.firstElementChild;
+	var compStyle = document.defaultView.getComputedStyle(slide);
+	var slideWidth = parseInt(compStyle.getPropertyValue("width"));
+	var slideHeight = parseInt(compStyle.getPropertyValue("height"));
 
-		var compStyle = document.defaultView.getComputedStyle(slideContainer);
-		var slideWidth = parseInt(compStyle.getPropertyValue("width"));
-		var slideHeight = parseInt(compStyle.getPropertyValue("height"));
+	slide.style.width = slideWidth + "px";
+	slide.style.height = slideHeight + "px";
 
-		slideTextfill.style.width = slideWidth + "px";
-		slideTextfill.style.height = slideHeight + "px";
+	var contentCompStyle = document.defaultView.getComputedStyle(content);
+	var fontSize = parseInt(contentCompStyle.getPropertyValue("font-size"));
 
-		var contentCompStyle = document.defaultView.getComputedStyle(content);
-		var fontSize = parseInt(contentCompStyle.getPropertyValue("font-size"));
+	var $slideTextfill = $(slide);
+	$slideTextfill.textfill({
+		maxFontPixels: fontSize,
+	});
+}
 
-		var $slideTextfill = $(slideTextfill);
-		$slideTextfill.textfill({
-			maxFontPixels: fontSize,
-		});
-	}
+function setText(text){
+	var currentChild = document.getElementById("slide").firstElementChild;
+	var newChild = document.createElement("SPAN");
+	newChild.textContent = text;
+	document.getElementById("slide").replaceChild(newChild,currentChild);
+	resizeText();
 }
 
 function run(text){
@@ -75,36 +82,14 @@ function run(text){
 	//Clean our text
 	var text = textCleanup(text);
 	//Split our text into sentences.
-	var sentences = tokenizer.sentences(text, {"newline_boundaries": true});
+	sentences = tokenizer.sentences(text, {"newline_boundaries": true});
+	sentencesIndex = 0;
 
-	//Create a slide for each sentence.
-	sentences.forEach(function(sentence){
-		var slideSpan = document.createElement('SPAN');
-		slideSpan.innerHTML = sentence;
-
-		//get the width and height of the slide container, and re-set it statically to the Textfill
-		var slideTextfill = document.createElement('DIV');
-		slideTextfill.className = "textfill";
-		slideTextfill.appendChild(slideSpan)
-
-		var slideContainer = document.createElement('SECTION');
-		slideContainer.appendChild(slideTextfill);
-
-		slides.appendChild(slideContainer);
-	});
-	
 	document.getElementById('landing').style.display="none";
-	document.getElementById('slides-container').style.display="block";
-
-	Reveal.initialize({transition: 'none',overview: false}); // none/fade/slide/convex/concave/zoom);
+	document.getElementById('slide-container').style.display="block";
 	viewingSlides = true;
-
-	var firstSlide = document.getElementById("slides").firstElementChild;
-	resizeText(firstSlide, false);
-
-	Reveal.addEventListener( 'slidechanged', function( event ) {
-		resizeText(event.currentSlide, false);
-	});
+	
+	setText(sentences[0]);
 }
 
 function runOnButton(){
@@ -134,37 +119,56 @@ function disableOther(textBox){
 }
 
 function closeSlides(){
-	var landing = document.getElementById('landing');
-	var slidesContainer = document.getElementById('slides-container');
+	if(viewingSlides){
+		var landing = document.getElementById('landing');
+		var slidesContainer = document.getElementById('slide-container');
 
-	//Immediately make landing visible
-	landing.style.display="block";
-	slidesContainer.style.display="none";
+		//Immediately make landing visible
+		landing.style.display="block";
+		slidesContainer.style.display="none";
 
-	//Delete old slides
-	var slides = document.getElementById('slides');
-	var cloned = slides.cloneNode(false);
-	slidesContainer.replaceChild(cloned, slides);
-
-	//Enable the UI.
-	viewingSlides = false;
-	updateProgress(0);
-	enableUI();
+		//Enable the UI.
+		viewingSlides = false;
+		updateProgress(0);
+		enableUI();
+	}
+}
+function nextSlide(){
+	var slide = document.getElementById("slide");
+	if(sentenceIndex + 1 < sentences.length){
+		sentenceIndex++;
+		setText(sentences[sentenceIndex]); 
+	}
+}
+function previousSlide(){
+	var slide = document.getElementById("slide");
+	if(sentenceIndex - 1 > -1){
+		sentenceIndex--;
+		setText(sentences[sentenceIndex]);
+	}
 }
 
-function closeOnEscape(evt){
-	if(viewingSlides){
-		evt = evt || window.event;
-		var isEscape = false;
-		if ("key" in evt) {
-			isEscape = evt.key == "Escape";
-		} else {
-			isEscape = evt.keyCode == 27;
-		}
-		if (isEscape) {
-			closeSlides();
-		}
-  }
+function isEscape(evt){
+	var isEscape = false;
+	if ("key" in evt) {
+		isEscape = evt.key == "Escape";
+	} else {
+		isEscape = evt.keyCode == 27;
+	}
+	return isEscape;
+}
+
+function keydownHandler(evt){
+	evt = evt || window.event
+	if (isEscape(evt)){
+		closeSlides();
+	//Left Arrow
+	} else if (evt.keyCode === 37){
+		previousSlide();
+	//Right Arrow
+	} else if (evt.keyCode === 39){
+		nextSlide();
+	}
 }
 
 function addListeners(){
@@ -186,12 +190,18 @@ function addListeners(){
 	goButton.addEventListener('click', buttonHandler = function() {
 		runOnButton();
 	});
-	//Close
+	//Close, Left and Right arrow keys
 	document.addEventListener('keydown', function(evt){
-		closeOnEscape(evt);
+		keydownHandler(evt);
 	});
 	document.getElementById('close').addEventListener('click', function(){
 		closeSlides();
+	});
+	document.getElementById('left').addEventListener('click', function(){
+		previousSlide();
+	});
+	document.getElementById('right').addEventListener('click', function(){
+		nextSlide();
 	});
 }
 
