@@ -171,6 +171,74 @@ function keydownHandler(evt){
 	}
 }
 
+function handleSwipe(direction){
+	switch(direction) {
+		case "up":
+			closeSlides();
+			break;
+		case "left":
+			previousSlide();
+			break;
+		case "right":
+			nextSlide();
+			break;
+		default:
+			break;
+	}
+}
+
+//Enable touch swiping
+function setupSwipe(){
+	var slide = document.getElementById("slide-container");
+	var startX, startY, startTime;
+
+	//Must go more than this in the axis we're testing
+	const minParallel = 150;
+	//Must go less than this in the axis we're not testing
+	const maxPerpendicular = 100;
+	//Must take less time than this
+	const allowedTime = 300;
+
+	//First contact
+	slide.addEventListener('touchstart', function(e){
+		var touchObject = e.changedTouches[0];
+
+		startX = touchObject.screenX;
+		startY = touchObject.screenY;
+		startTime = new Date().getTime();
+
+		e.preventDefault();
+	});
+
+	slide.addEventListener('touchend', function(e){
+		var touchObject = e.changedTouches[0];
+
+		var distX = touchObject.screenX - startX;
+		var distY = touchObject.screenY - startY;
+		var elapsedTime = new Date().getTime() - startTime;
+
+		var swipeDirection;
+		//We don't want a swipe to take too long
+		if (elapsedTime <= allowedTime){
+
+			//Test for horizontal swipe
+			if (Math.abs(distX) >= minParallel && Math.abs(distY) <= maxPerpendicular){
+				swipeDirection = (distX < 0)? 'left' : 'right';
+
+			//Test for vertical swipe
+			} else if (Math.abs(distY) >= minParallel && Math.abs(distX) <= maxPerpendicular){
+				swipeDirection = (distY < 0)? 'up' : 'down';
+
+			//We didn't meet the requirements
+			}else {
+				swipeDirection = 'none';
+			}
+		}
+		handleSwipe(swipeDirection);
+		e.preventDefault();
+	});
+}
+
 function addListeners(){
 	//On 'Enter', interpret the content of the textEntry and urlEntry boxes.
 	textEntry.addEventListener('keypress', function (e) {
@@ -207,4 +275,5 @@ function addListeners(){
 
 window.onload = function(){
 	addListeners();
+	setupSwipe();
 }
