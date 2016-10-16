@@ -177,10 +177,10 @@ function handleSwipe(direction){
 			closeSlides();
 			break;
 		case "left":
-			previousSlide();
+			nextSlide();
 			break;
 		case "right":
-			nextSlide();
+			previousSlide();
 			break;
 		default:
 			break;
