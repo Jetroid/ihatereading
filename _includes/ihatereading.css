@@ -1,8 +1,11 @@
 .debug {
 	display: none !important;
 }
+body{
+	overflow-y: hidden;
+}
 *{
-font-family: monospace;
+	font-family: monospace;
 }
 #landing{
 	width: 100%;

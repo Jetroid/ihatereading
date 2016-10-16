@@ -193,9 +193,9 @@ function setupSwipe(){
 	var startX, startY, startTime;
 
 	//Must go more than this in the axis we're testing
-	const minParallel = 150;
+	const minParallel = 50;
 	//Must go less than this in the axis we're not testing
-	const maxPerpendicular = 100;
+	const maxPerpendicular = 25;
 	//Must take less time than this
 	const allowedTime = 300;
 
