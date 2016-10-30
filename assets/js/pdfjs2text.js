@@ -23,13 +23,14 @@ function PDFJS2TEXT(){
 			callbackPageDone( completedPages, totalPages );
 
 			//Iterate through each page and get all the text for that page, store in pages.
-			var text = "";
+			var pages = {};
 			var prevX = null;
 			var prevY = null;
 			var prevStr = null;
 			
-			for (i = 1; i <= totalPages; i++){
+			for (var i = 1; i <= totalPages; i++){
 				pdf.getPage(i).then( function(page){
+					var pageText = "";
 					var n = page.pageNumber;
 					page.getTextContent().then( function(textContent){
 						if( null != textContent.items ){
@@ -43,17 +44,22 @@ function PDFJS2TEXT(){
 								//and our string starts with an uppercase or a letter.
 								//(Trying to identify paragraphs)
 								if(prevY != null && prevY != y && (str.match(/^([A-Z0-9])/) != null)){
-									text += "\r\n";
+									pageText += "\r\n";
 								}
 								
-								text += str;
+								pageText += str;
 								prevX = x; prevY = y; prevStr = str;
 							}
 						}
+						pages[n] = pageText;
 						++ completedPages;
 						callbackPageDone(completedPages, totalPages );
 						if (completedPages == totalPages){
-							callbackAllDone(text);
+							var allText = "";
+							for(var j = 1; j <= totalPages; j++){
+								allText += pages[j]
+							}
+							callbackAllDone(allText);
 						}
 					});
 				});
