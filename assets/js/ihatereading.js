@@ -203,8 +203,8 @@ function setupSwipe(){
 	slide.addEventListener('touchstart', function(e){
 		var touchObject = e.changedTouches[0];
 
-		startX = touchObject.screenX;
-		startY = touchObject.screenY;
+		startX = touchObject.clientX;
+		startY = touchObject.clientY;
 		startTime = new Date().getTime();
 
 		e.preventDefault();
@@ -213,8 +213,8 @@ function setupSwipe(){
 	slide.addEventListener('touchend', function(e){
 		var touchObject = e.changedTouches[0];
 
-		var distX = touchObject.screenX - startX;
-		var distY = touchObject.screenY - startY;
+		var distX = touchObject.clientX - startX;
+		var distY = touchObject.clientY - startY;
 		var elapsedTime = new Date().getTime() - startTime;
 
 		var swipeDirection;
